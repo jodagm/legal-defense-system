@@ -1,0 +1,25 @@
+{
+    "python.defaultInterpreterPath": "./legal_env/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--line-length", "100"],
+    "files.exclude": {
+        "**/__pycache__": true,
+        "**/.env": true,
+        "**/data/uploaded_documents": true,
+        "**/data/processed": true,
+        "**/legal_env": true
+    },
+    "streamlit.pythonPath": "./legal_env/bin/python",
+    "files.associations": {
+        "*.py": "python"
+    },
+    "editor.rulers": [100],
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+    }
+}

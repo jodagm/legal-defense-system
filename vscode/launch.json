@@ -1,0 +1,34 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run Streamlit App",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/legal_env/bin/streamlit",
+            "args": ["run", "main.py", "--server.port", "8501"],
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            },
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Debug Python File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "env": {
+                "PYTHONPATH": "${workspaceFolder}"
+            }
+        },
+        {
+            "name": "Test Chatbot",
+            "type": "python",
+            "request": "launch",
+            "program": "${workspaceFolder}/test_chatbot.py",
+            "console": "integratedTerminal"
+        }
+    ]
+}

@@ -1,0 +1,58 @@
+# Legal Defense System - Cursor AI Rules
+
+## Project Context
+This is a legal defense system built with Streamlit and Claude AI for analyzing legal documents and providing strategic legal advice.
+
+## Code Style Guidelines
+- Use Hebrew comments and docstrings for user-facing features
+- English for technical/internal documentation
+- Follow Python PEP 8 with 100 character line limit
+- Use type hints where appropriate
+- Prefer explicit over implicit code
+
+## Architecture Principles
+- main.py: Main Streamlit application
+- core/: Core functionality (chatbot, AI logic)
+- ui/: User interface components
+- processors/: Document processing logic
+- config/: Configuration and settings
+
+## Security Rules
+- NEVER hardcode API keys or secrets
+- Always use .env for sensitive data
+- Validate all user inputs
+- Sanitize file uploads
+- Log security events
+
+## AI Integration Guidelines
+- All AI prompts should include legal context
+- Use professional legal language in prompts
+- Always include disclaimer about AI limitations
+- Provide citations for AI responses
+- Handle API failures gracefully
+
+## Legal Domain Knowledge
+- Focus on civil and criminal law
+- Emphasize defense strategy
+- Look for contradictions and weaknesses
+- Provide strategic recommendations
+- Maintain professional legal terminology
+
+## Development Workflow
+- Use feature branches for new development
+- Write commit messages with emoji prefixes
+- Test locally before pushing
+- Update CHANGELOG.md for releases
+- Run secret scanning before commits
+
+## Error Handling
+- Always provide user-friendly error messages
+- Log technical details for debugging
+- Graceful degradation when services fail
+- Clear guidance for error resolution
+
+## Performance Guidelines
+- Cache document processing results
+- Optimize AI API calls
+- Lazy load heavy components
+- Monitor memory usage with large documents
