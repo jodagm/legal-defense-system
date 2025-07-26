@@ -11,7 +11,9 @@ downloads/
 eggs/
 .eggs/
 lib/
+legal_env/
 lib64/
+data/
 parts/
 sdist/
 var/
