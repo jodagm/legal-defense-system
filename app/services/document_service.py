@@ -1,5 +1,5 @@
 """
-Document service - business logic for document operations
+Document service - business logic for document operations with evidence integration
 """
 from typing import Dict, List, Any, Optional
 import json
@@ -11,13 +11,14 @@ from app.core.error_handler import DocumentProcessingError
 
 
 class DocumentService:
-    """Service for document operations - handles all document logic"""
+    """Service for document operations with integrated evidence processing"""
     
-    def __init__(self, data_paths: Dict[str, Path]):
+    def __init__(self, data_paths: Dict[str, Path], evidence_service: Optional[Any] = None):
         self.upload_path = data_paths['upload']
         self.processed_path = data_paths['processed']
         self.summaries_path = data_paths['summaries']
         self.metadata_path = data_paths['metadata']
+        self.evidence_service = evidence_service  # Integration with evidence processing
     
     def has_documents(self) -> bool:
         """Check if any processed documents exist"""
@@ -60,7 +61,7 @@ class DocumentService:
             raise DocumentProcessingError(f"שגיאה בשמירת קובץ: {e}")
     
     def process_uploaded_file(self, file_path: Path) -> Dict[str, Any]:
-        """Process uploaded PDF file and extract real content"""
+        """Process uploaded PDF file with integrated evidence processing"""
         if not file_path.exists():
             raise DocumentProcessingError(f"קובץ לא נמצא: {file_path}")
         
@@ -82,11 +83,48 @@ class DocumentService:
                 'extraction_method': 'PyPDF2' if chunks else 'fallback'
             }
             
+            # Phase 1: Evidence processing integration
+            if self.evidence_service and chunks:
+                try:
+                    # Combine all chunk texts for evidence processing
+                    full_content = "\n\n".join(chunk['text'] for chunk in chunks)
+                    
+                    # Process document for evidence extraction
+                    document_id = file_path.stem
+                    evidence_report = self.evidence_service.process_document(
+                        document_id=document_id,
+                        file_path=str(file_path),
+                        content=full_content
+                    )
+                    
+                    # Add evidence insights to processed data
+                    processed_data['evidence_analysis'] = {
+                        'document_classification': evidence_report.classification.primary_type.value,
+                        'classification_confidence': evidence_report.classification.confidence,
+                        'strategic_value': evidence_report.evidence_item.strategic_mapping.overall_strategic_value.value,
+                        'truth_defense_relevance': evidence_report.evidence_item.strategic_mapping.truth_defense_relevance.value,
+                        'good_faith_relevance': evidence_report.evidence_item.strategic_mapping.good_faith_relevance.value,
+                        'procedural_defense_relevance': evidence_report.evidence_item.strategic_mapping.procedural_defense_relevance.value,
+                        'key_facts_count': len(evidence_report.evidence_item.legal_dna.key_facts),
+                        'legal_entities_count': len(evidence_report.evidence_item.legal_dna.legal_entities),
+                        'recommendations': evidence_report.recommendations[:3],  # Top 3 recommendations
+                        'confidence_score': evidence_report.evidence_item.legal_dna.confidence_score
+                    }
+                    
+                    st.success(f"🧠 ניתוח ראיות הושלם - סיווג: {evidence_report.classification.primary_type.value}")
+                    
+                except Exception as e:
+                    st.warning(f"⚠️ ניתוח ראיות נכשל: {e}")
+                    processed_data['evidence_analysis'] = {'error': str(e)}
+            
             # Save processed data
             output_file = self.processed_path / f"{file_path.stem}_processed.json"
             self._save_processed_document(output_file, processed_data)
             
-            st.success(f"✅ עובד בהצלחה: {len(chunks)} קטעי טקסט נחלצו")
+            success_msg = f"✅ עובד בהצלחה: {len(chunks)} קטעי טקסט נחלצו"
+            if 'evidence_analysis' in processed_data and 'error' not in processed_data['evidence_analysis']:
+                success_msg += f" + ניתוח ראיות"
+            st.success(success_msg)
             
             self._log_operation("file_processing", file_path.name, "success")
             return processed_data
@@ -361,3 +399,51 @@ class DocumentService:
                 
         except Exception as e:
             print(f"Warning: Could not log operation: {e}")
+    
+    def clear_all_documents(self) -> Dict[str, Any]:
+        """Clear all uploaded and processed documents"""
+        results = {
+            'uploaded_files_deleted': 0,
+            'processed_files_deleted': 0,
+            'errors': []
+        }
+        
+        try:
+            # Clear uploaded documents  
+            for file_path in self.upload_path.glob("*.pdf"):
+                try:
+                    file_path.unlink()
+                    results['uploaded_files_deleted'] += 1
+                except Exception as e:
+                    results['errors'].append(f"Failed to delete {file_path.name}: {e}")
+            
+            # Clear processed documents
+            for file_path in self.processed_path.glob("*_processed.json"):
+                try:
+                    file_path.unlink()
+                    results['processed_files_deleted'] += 1
+                except Exception as e:
+                    results['errors'].append(f"Failed to delete {file_path.name}: {e}")
+            
+            # Clear summaries
+            for file_path in self.summaries_path.glob("*.json"):
+                try:
+                    file_path.unlink()
+                except Exception as e:
+                    results['errors'].append(f"Failed to delete summary {file_path.name}: {e}")
+            
+            # Clear metadata
+            for file_path in self.metadata_path.glob("*.json"):
+                try:
+                    file_path.unlink()  
+                except Exception as e:
+                    results['errors'].append(f"Failed to delete metadata {file_path.name}: {e}")
+            
+            self._log_operation("system_clear", "all_documents", "success", 
+                              f"Deleted {results['uploaded_files_deleted']} uploaded, {results['processed_files_deleted']} processed files")
+            
+        except Exception as e:
+            results['errors'].append(f"System error during document clearing: {e}")
+            self._log_operation("system_clear", "all_documents", "error", str(e))
+        
+        return results

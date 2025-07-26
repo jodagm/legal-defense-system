@@ -1,0 +1,16 @@
+Collecting pytest
+  Downloading pytest-8.4.1-py3-none-any.whl.metadata (7.7 kB)
+Collecting iniconfig>=1 (from pytest)
+  Downloading iniconfig-2.1.0-py3-none-any.whl.metadata (2.7 kB)
+Requirement already satisfied: packaging>=20 in ./legal_env/lib/python3.11/site-packages (from pytest) (25.0)
+Collecting pluggy<2,>=1.5 (from pytest)
+  Downloading pluggy-1.6.0-py3-none-any.whl.metadata (4.8 kB)
+Collecting pygments>=2.7.2 (from pytest)
+  Using cached pygments-2.19.2-py3-none-any.whl.metadata (2.5 kB)
+Downloading pytest-8.4.1-py3-none-any.whl (365 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 365.5/365.5 kB 423.9 kB/s eta 0:00:00
+Downloading iniconfig-2.1.0-py3-none-any.whl (6.0 kB)
+Downloading pluggy-1.6.0-py3-none-any.whl (20 kB)
+Using cached pygments-2.19.2-py3-none-any.whl (1.2 MB)
+Installing collected packages: pygments, pluggy, iniconfig, pytest
+Successfully installed iniconfig-2.1.0 pluggy-1.6.0 pygments-2.19.2 pytest-8.4.1

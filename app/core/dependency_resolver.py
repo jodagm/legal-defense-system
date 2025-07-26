@@ -35,12 +35,19 @@ def _resolve_data_paths() -> Dict[str, Path]:
     """Resolve and create required data directories"""
     ensure_directories_exist(REQUIRED_DIRECTORIES)
     
+    # Ensure new Phase 1 directories exist
+    base_path = Path("data")
+    (base_path / "evidence_items").mkdir(parents=True, exist_ok=True)
+    (base_path / "conversations").mkdir(parents=True, exist_ok=True)
+    
     return {
         'upload': Path("data/uploaded_documents"),
         'processed': Path("data/processed"),
         'summaries': Path("data/summaries"),
         'metadata': Path("data/metadata"),
-        'logs': Path("data/logs")
+        'logs': Path("data/logs"),
+        'evidence': Path("data/evidence_items"),        # New: Evidence storage
+        'conversations': Path("data/conversations")     # New: Conversation storage
     }
 
 
@@ -79,6 +86,7 @@ def _resolve_settings() -> Dict[str, Any]:
     """Resolve application settings"""
     return {
         'claude_model': CLAUDE_MODEL,
-        'app_version': '3.0.0',
-        'debug_mode': os.getenv('DEBUG', 'False').lower() == 'true'
+        'app_version': '3.0.0-phase1',
+        'debug_mode': os.getenv('DEBUG', 'False').lower() == 'true',
+        'conversation_db_path': 'data/conversations/conversations.db'
     }
